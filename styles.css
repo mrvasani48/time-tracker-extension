@@ -1,0 +1,27 @@
+body {
+    width: 300px;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.time-info p {
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 5px 0;
+}
+
+#target-day, #remaining, #leave-at, #target-week, #remaining-week, #remaining-to-target {
+    font-weight: bold;
+}
+
+#target-day { color: orange; }
+#remaining { color: green; }
+#leave-at { color: blue; }
+#target-week { color: red; }
+#remaining-week { color: purple; }
+#remaining-to-target { color: teal; }

@@ -1,5 +1,7 @@
-const targetDayDuration = { hours: 7, minutes: 20, seconds: 0 };  // Target day duration
+const targetDayDuration = { hours: 8, minutes: 20, seconds: 0 };  // Target day duration
 const targetWeekDuration = { hours: 41, minutes: 40, seconds: 0 }; // Target week duration
+chrome.storage.local.set('targetDayDuration',targetDayDuration)
+chrome.storage.local.set('targetWeekDuration',targetWeekDuration)
 
 // Convert time to seconds
 function convertToSeconds(duration) {

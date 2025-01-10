@@ -81,14 +81,15 @@ function getTimeInfo() {
   // Create leave time (time when target day duration will be completed)
   const currentTime = new Date();
   const leaveTime = new Date(currentTime.getTime() + (remainingTime.hours * 3600 + remainingTime.minutes * 60 + remainingTime.seconds) * 1000);
-  
+  const formattedLeaveTime = formatDuration({ hours: leaveTime.getHours(), minutes: leaveTime.getMinutes(), seconds: leaveTime.getSeconds() });
+
   const remainingWeekTime = calculateRemainingWeekTimeDirect();
   const remainingToTarget = calculateRemainingToTarget();
 
   return {
     targetDay: formatDuration(targetDayDuration),
     remaining: formattedRemainingTime,
-    leaveAt: formatDate(leaveTime),
+    leaveAt: formattedLeaveTime,
     targetWeek: formatDuration(targetWeekDuration),
     remainingWeek: remainingWeekTime,
     remainingToTarget: remainingToTarget

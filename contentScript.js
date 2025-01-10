@@ -1,7 +1,40 @@
-const targetDayDuration = { hours: 8, minutes: 20, seconds: 0 };  // Target day duration
-const targetWeekDuration = { hours: 41, minutes: 40, seconds: 0 }; // Target week duration
-chrome.storage.local.set('targetDayDuration',targetDayDuration)
-chrome.storage.local.set('targetWeekDuration',targetWeekDuration)
+let targetDayDuration = { hours: 0, minutes: 0, seconds: 0 };  // Target day duration
+let targetWeekDuration = { hours: 0, minutes: 0, seconds: 0 }; // Target week duration
+
+chrome.storage.local.get('targetDayDuration', (result) => {
+  if (chrome.runtime.lastError) {
+    console.error('Error retrieving targetDayDuration:', chrome.runtime.lastError);
+    return;
+  }
+
+   targetDayDuration = result.targetDayDuration 
+    ? JSON.parse(result.targetDayDuration) 
+    : null;
+
+  if (targetDayDuration) {
+    console.log('Retrieved targetDayDuration:', targetDayDuration);
+  } else {
+    console.warn('targetDayDuration not found in storage.');
+  }
+});
+
+chrome.storage.local.get('targetWeekDuration', (result) => {
+  if (chrome.runtime.lastError) {
+    console.error('Error retrieving targetDayDuration:', chrome.runtime.lastError);
+    return;
+  }
+
+   targetWeekDuration = result.targetWeekDuration 
+    ? JSON.parse(result.targetWeekDuration) 
+    : null;
+
+  if (targetWeekDuration) {
+    console.log('Retrieved targetWeekDuration:', targetWeekDuration);
+  } else {
+    console.warn('targetDayDuration not found in storage.');
+  }
+});
+
 
 // Convert time to seconds
 function convertToSeconds(duration) {

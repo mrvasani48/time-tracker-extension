@@ -1,5 +1,5 @@
 body {
-    width: 300px;
+    width: 500px;
     padding: 20px;
     font-family: Arial, sans-serif;
     background-color:black ;
@@ -57,3 +57,14 @@ button {
 button:hover {
     background: #0056b3;
 }
+.popup-body{
+    display: flex;
+    justify-content:center;
+    gap: 15px;
+ }
+
+ .time-info{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+ }

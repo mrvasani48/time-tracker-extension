@@ -1,6 +1,6 @@
 body {
     width: 550px;
-    padding: 20px;
+    padding: 10px;
     font-family: Arial, sans-serif;
     background-color:black ;
     color: white;
@@ -67,4 +67,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 5px;
+ }
+ hr {
+    width: 90%;
  }

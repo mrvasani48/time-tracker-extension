@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
             '2':   { hours: 25, minutes: 0,  seconds: 0 },
             '2.5': { hours: 21, minutes: 0,  seconds: 0 },
             '3':   { hours: 16, minutes: 40, seconds: 0 },
-            '3.5': { hours: 13, minutes: 40, seconds: 0 },
+            '3.5': { hours: 12, minutes: 40, seconds: 0 },
             '4':   { hours: 8,  minutes: 20, seconds: 0 },
             '4.5': { hours: 4,  minutes: 20, seconds: 0 },
             '5':   { hours: 0,  minutes: 0,  seconds: 0 }

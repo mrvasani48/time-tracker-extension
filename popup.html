@@ -1,56 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Tracker Extension</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div id="popup-content">
-        <h1>Time Tracker Extension</h1>
+        <h1>Time Tracker for PMS</h1>
         <div class="popup-body">
-        <div class="time-info">
-            <h2>Current Time Info</h2>
-            <p>Target Day Duration: <span id="target-day">--:--:--</span></p>
-            <p>Remaining: <span id="remaining">--:--:--</span></p>
-            <p>You can leave at: <span id="leave-at">--:--</span></p>
-            <hr/>
-            <p>Target Week Duration: <span id="target-week">--:--:--</span></p>
-            <p>Remaining Week Time (exclude today): <span id="remaining-week">--:--:--</span></p>
-            <p>Remaining to Target: <span id="remaining-to-target">--:--:--</span></p>
-        </div>
-        <div class="edit-durations">
-            <h2>Edit Durations</h2>
-            <h3>Target Day Duration</h3>
-            <div class="input-group">
-                <label for="day-hours">Hours:</label>
-                <input type="number" id="day-hours" min="0" max="24">
-                <label for="day-minutes">Minutes:</label>
-                <input type="number" id="day-minutes" min="0" max="59">
-                <label for="day-seconds">Seconds:</label>
-                <input type="number" id="day-seconds" min="0" max="59">
+            <div class="time-info">
+                <h2>Current Time Info</h2>
+                <p>Target Day Duration: <span id="target-day">--:--:--</span></p>
+                <p>Remaining: <span id="remaining">--:--:--</span></p>
+                <p>You can leave at: <span id="leave-at">--:--</span></p>
+                <hr />
+                <p>Target Week Duration: <span id="target-week">--:--:--</span></p>
+                <p>Remaining Week Time (exclude today): <span id="remaining-week">--:--:--</span></p>
+                <p>Remaining to Target: <span id="remaining-to-target">--:--:--</span></p>
             </div>
-            <button id="save-day-duration">Save Day Duration</button>
+            <div class="edit-durations">
+                <h2>Edit Durations</h2>
+                <h3>Target Day Duration</h3>
+                <div class="input-group">
+                    <label for="day-hours">Hours:</label>
+                    <input type="number" id="day-hours" min="0" max="24">
+                    <label for="day-minutes">Minutes:</label>
+                    <input type="number" id="day-minutes" min="0" max="59">
+                    <label for="day-seconds">Seconds:</label>
+                    <input type="number" id="day-seconds" min="0" max="59">
+                </div>
+                <button id="save-day-duration">Save Day Duration</button>
 
-            <h3>Target Week Duration</h3>
-            <div class="input-group">
-                <input type="checkbox" id="half-day-checkbox">
-                <label for="half-day-checkbox">Any half day included?</label>
+                <h3>Target Week Duration</h3>
+                <div class="input-group">
+                    <input type="checkbox" id="half-day-checkbox">
+                    <label for="half-day-checkbox">Any half day included?</label>
+                </div>
+                <div class="input-group" >
+                    <label for="week-hours">Hours:</label>
+                    <input type="number" id="week-hours" min="0" max="168">
+                    <label for="week-minutes">Minutes:</label>
+                    <input type="number" id="week-minutes" min="0" max="59">
+                    <label for="week-seconds">Seconds:</label>
+                    <input type="number" id="week-seconds" min="0" max="59">
+                </div>
+                <button id="save-week-duration">Save Week Duration</button>
+                <p style="text-align: right;">Made by Kishan Vasani</p>
             </div>
-            <div class="input-group">
-                <label for="week-hours">Hours:</label>
-                <input type="number" id="week-hours" min="0" max="168">
-                <label for="week-minutes">Minutes:</label>
-                <input type="number" id="week-minutes" min="0" max="59">
-                <label for="week-seconds">Seconds:</label>
-                <input type="number" id="week-seconds" min="0" max="59">
-            </div>
-            <button id="save-week-duration">Save Week Duration</button>
         </div>
+        <script src="popup.js"></script>
     </div>
-
-    </div>
-    <script src="popup.js"></script>
 </body>
+
 </html>

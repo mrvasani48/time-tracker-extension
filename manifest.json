@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Time Tracker Extension",
-  "version": "1.0",
+  "name": "Time Tracker for PMS",
+  "version": "2.0",
   "description": "Track your time and stay on target!",
   "action": {
     "default_popup": "popup.html",

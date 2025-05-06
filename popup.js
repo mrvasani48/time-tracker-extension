@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const defaultWeekDuration = { hours: 41, minutes: 40, seconds: 0 }; // Default week duration
         
         // Load stored durations and prefill inputs
-        chrome.storage.local.get(['targetDayDuration', 'targetWeekDuration'], (result) => {
+        chrome.storage.local.get(['targetDayDuration', 'targetWeekDuration', 'halfDayIncluded'], (result) => {
             // Handle targetDayDuration
             let dayDuration;
             if (result.targetDayDuration) {
@@ -63,10 +63,16 @@ document.addEventListener('DOMContentLoaded', function () {
             dayHoursInput.value = dayDuration.hours;
             dayMinutesInput.value = dayDuration.minutes;
             daySecondsInput.value = dayDuration.seconds;
-        
+
+            // Handle halfDayIncluded
+            let halfDayIncluded = !!result.halfDayIncluded;
+            halfDayCheckbox.checked = halfDayIncluded;
+
             // Handle targetWeekDuration
             let weekDuration;
-            if (result.targetWeekDuration) {
+            if (halfDayIncluded) {
+                weekDuration = { hours: 37, minutes: 40, seconds: 0 };
+            } else if (result.targetWeekDuration) {
                 weekDuration = JSON.parse(result.targetWeekDuration);
             } else {
                 weekDuration = defaultWeekDuration;
@@ -82,6 +88,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         
 
+        // Helper to reload the active tab
+        function reloadActiveTab() {
+            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                if (tabs[0]) chrome.tabs.reload(tabs[0].id);
+            });
+        }
+
         // Save Target Day Duration
         saveDayButton.addEventListener('click', () => {
             const dayDuration = {
@@ -92,19 +105,30 @@ document.addEventListener('DOMContentLoaded', function () {
             chrome.storage.local.set({ targetDayDuration: JSON.stringify(dayDuration) }, () => {
                 document.getElementById('target-day').textContent = `${dayDuration.hours}h ${dayDuration.minutes}m ${dayDuration.seconds}s`;
                 alert('Target Day Duration updated successfully!');
+                reloadActiveTab();
             });
         });
 
         // Save Target Week Duration
         saveWeekButton.addEventListener('click', () => {
-            const weekDuration = {
-                hours: parseInt(weekHoursInput.value || '0', 10),
-                minutes: parseInt(weekMinutesInput.value || '0', 10),
-                seconds: parseInt(weekSecondsInput.value || '0', 10),
-            };
-            chrome.storage.local.set({ targetWeekDuration: JSON.stringify(weekDuration) }, () => {
+            let weekDuration;
+            let halfDayIncluded = halfDayCheckbox.checked;
+            if (halfDayIncluded) {
+                weekDuration = { hours: 37, minutes: 40, seconds: 0 };
+            } else {
+                weekDuration = {
+                    hours: parseInt(weekHoursInput.value || '0', 10),
+                    minutes: parseInt(weekMinutesInput.value || '0', 10),
+                    seconds: parseInt(weekSecondsInput.value || '0', 10),
+                };
+            }
+            chrome.storage.local.set({ 
+                targetWeekDuration: JSON.stringify(weekDuration),
+                halfDayIncluded: halfDayIncluded
+            }, () => {
                 document.getElementById('target-week').textContent = `${weekDuration.hours}h ${weekDuration.minutes}m ${weekDuration.seconds}s`;
                 alert('Target Week Duration updated successfully!');
+                reloadActiveTab();
             });
         });
 
@@ -117,13 +141,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         // Listen for checkbox changes
         halfDayCheckbox.addEventListener('change', function () {
+            chrome.storage.local.set({ halfDayIncluded: this.checked });
             if (this.checked) {
                 setWeekDuration(37, 40, 0);
             } else {
                 setWeekDuration(defaultWeekDuration.hours, defaultWeekDuration.minutes, defaultWeekDuration.seconds);
             }
         });
-        // On load, ensure checkbox is unchecked and default values are set
-        halfDayCheckbox.checked = false;
     });
 });

@@ -47,41 +47,29 @@ document.addEventListener('DOMContentLoaded', function () {
         const defaultWeekDuration = { hours: 41, minutes: 40, seconds: 0 }; // Default week duration
         
         // Load stored durations and prefill inputs
-        chrome.storage.local.get(['targetDayDuration', 'targetWeekDuration', 'halfDayIncluded'], (result) => {
+        chrome.storage.local.get(['targetDayDuration', 'targetWeekDuration', 'leaveDays'], (result) => {
             // Handle targetDayDuration
             let dayDuration;
             if (result.targetDayDuration) {
                 dayDuration = JSON.parse(result.targetDayDuration);
             } else {
                 dayDuration = defaultDayDuration;
-                chrome.storage.local.set({ targetDayDuration: JSON.stringify(defaultDayDuration) }, () => {
-                    console.log('Default targetDayDuration set.');
-                });
             }
-        
-            // Prefill day duration inputs
             dayHoursInput.value = dayDuration.hours;
             dayMinutesInput.value = dayDuration.minutes;
             daySecondsInput.value = dayDuration.seconds;
 
-            // Handle halfDayIncluded
-            let halfDayIncluded = !!result.halfDayIncluded;
-            halfDayCheckbox.checked = halfDayIncluded;
+            // Handle leaveDays and update dropdown UI
+            let leaveDays = result.leaveDays || '0';
+            leaveDaysSelect.value = leaveDays;
 
             // Handle targetWeekDuration
             let weekDuration;
-            if (halfDayIncluded) {
-                weekDuration = { hours: 37, minutes: 40, seconds: 0 };
-            } else if (result.targetWeekDuration) {
+            if (result.targetWeekDuration) {
                 weekDuration = JSON.parse(result.targetWeekDuration);
             } else {
                 weekDuration = defaultWeekDuration;
-                chrome.storage.local.set({ targetWeekDuration: JSON.stringify(defaultWeekDuration) }, () => {
-                    console.log('Default targetWeekDuration set.');
-                });
             }
-        
-            // Prefill week duration inputs
             weekHoursInput.value = weekDuration.hours;
             weekMinutesInput.value = weekDuration.minutes;
             weekSecondsInput.value = weekDuration.seconds;
@@ -109,44 +97,50 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // Save Target Week Duration
-        saveWeekButton.addEventListener('click', () => {
-            let weekDuration;
-            let halfDayIncluded = halfDayCheckbox.checked;
-            if (halfDayIncluded) {
-                weekDuration = { hours: 37, minutes: 40, seconds: 0 };
-            } else {
-                weekDuration = {
-                    hours: parseInt(weekHoursInput.value || '0', 10),
-                    minutes: parseInt(weekMinutesInput.value || '0', 10),
-                    seconds: parseInt(weekSecondsInput.value || '0', 10),
-                };
-            }
-            chrome.storage.local.set({ 
-                targetWeekDuration: JSON.stringify(weekDuration),
-                halfDayIncluded: halfDayIncluded
-            }, () => {
-                document.getElementById('target-week').textContent = `${weekDuration.hours}h ${weekDuration.minutes}m ${weekDuration.seconds}s`;
-                alert('Target Week Duration updated successfully!');
-                reloadActiveTab();
-            });
+        // Add mapping for leave days to week duration
+        const leaveDaysSelect = document.getElementById('leave-days');
+        const weekDurationMap = {
+            '0':   { hours: 41, minutes: 40, seconds: 0 },
+            '0.5': { hours: 37, minutes: 40, seconds: 0 },
+            '1':   { hours: 33, minutes: 20, seconds: 0 },
+            '1.5': { hours: 29, minutes: 20, seconds: 0 },
+            '2':   { hours: 25, minutes: 0,  seconds: 0 },
+            '2.5': { hours: 21, minutes: 0,  seconds: 0 },
+            '3':   { hours: 16, minutes: 40, seconds: 0 },
+            '3.5': { hours: 13, minutes: 20, seconds: 0 },
+            '4':   { hours: 8,  minutes: 20, seconds: 0 },
+            '4.5': { hours: 4,  minutes: 20, seconds: 0 },
+            '5':   { hours: 0,  minutes: 0,  seconds: 0 }
+        };
+        leaveDaysSelect.addEventListener('change', function() {
+            const val = leaveDaysSelect.value;
+            const dur = weekDurationMap[val];
+            setWeekDuration(dur.hours, dur.minutes, dur.seconds);
+            // Store leaveDays in local storage
+            chrome.storage.local.set({ leaveDays: val });
         });
 
-        const halfDayCheckbox = document.getElementById('half-day-checkbox');
         // Helper to set week duration fields
         function setWeekDuration(hours, minutes, seconds) {
             weekHoursInput.value = hours;
             weekMinutesInput.value = minutes;
             weekSecondsInput.value = seconds;
         }
-        // Listen for checkbox changes
-        halfDayCheckbox.addEventListener('change', function () {
-            chrome.storage.local.set({ halfDayIncluded: this.checked });
-            if (this.checked) {
-                setWeekDuration(37, 40, 0);
-            } else {
-                setWeekDuration(defaultWeekDuration.hours, defaultWeekDuration.minutes, defaultWeekDuration.seconds);
-            }
+
+        // Save Target Week Duration
+        saveWeekButton.addEventListener('click', () => {
+            let weekDuration = {
+                hours: parseInt(weekHoursInput.value || '0', 10),
+                minutes: parseInt(weekMinutesInput.value || '0', 10),
+                seconds: parseInt(weekSecondsInput.value || '0', 10)
+            };
+            chrome.storage.local.set({
+                targetWeekDuration: JSON.stringify(weekDuration)
+            }, () => {
+                document.getElementById('target-week').textContent = `${weekDuration.hours}h ${weekDuration.minutes}m ${weekDuration.seconds}s`;
+                alert('Target Week Duration updated successfully!');
+                reloadActiveTab();
+            });
         });
     });
 });

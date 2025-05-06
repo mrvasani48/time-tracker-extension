@@ -17,7 +17,7 @@
             <p>You can leave at: <span id="leave-at">--:--</span></p>
             <hr/>
             <p>Target Week Duration: <span id="target-week">--:--:--</span></p>
-            <p>Remaining Week Time: <span id="remaining-week">--:--:--</span></p>
+            <p>Remaining Week Time (exclude today): <span id="remaining-week">--:--:--</span></p>
             <p>Remaining to Target: <span id="remaining-to-target">--:--:--</span></p>
         </div>
         <div class="edit-durations">
@@ -34,6 +34,10 @@
             <button id="save-day-duration">Save Day Duration</button>
 
             <h3>Target Week Duration</h3>
+            <div class="input-group">
+                <input type="checkbox" id="half-day-checkbox">
+                <label for="half-day-checkbox">Any half day included?</label>
+            </div>
             <div class="input-group">
                 <label for="week-hours">Hours:</label>
                 <input type="number" id="week-hours" min="0" max="168">

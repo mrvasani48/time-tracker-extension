@@ -60,7 +60,6 @@ function getTimeInfo() {
 
   const companyStartTime = [10, 0, 0];
   
-  console.log('startTime', startTime);
 
   // Compare startTime with companyStartTime
   let isBeforeCompanyTime = false;
@@ -77,8 +76,6 @@ function getTimeInfo() {
     const diffSecs = diffSeconds % 60;
     diffWithCompanyTime = `${diffHours}h ${diffMinutes}m ${diffSecs}s`;
   }
-  console.log('isBeforeCompanyTime', isBeforeCompanyTime);
-  console.log('diffWithCompanyTime', diffWithCompanyTime);
   const durationNode = document.getElementsByClassName('globalTable-Table-td')[4];
   if (!durationNode) {
     console.error('Duration node not found');
@@ -90,68 +87,42 @@ function getTimeInfo() {
 
   const targetDayDurationInSeconds = convertToSeconds(targetDayDuration);
 
-  // Calculate the remaining time
-  let remainingTime = getRemainingTime(initialDurationInSeconds, targetDayDurationInSeconds);
-
-  // If employee started before company time, add extra hours needed to remainingTime
+  // Calculate the extra seconds if started before company time
+  let extraSecondsIfEarly = 0;
   if (isBeforeCompanyTime && diffWithCompanyTime) {
-    // Parse diffWithCompanyTime (e.g., '0h 30m 0s')
     const match = diffWithCompanyTime.match(/(\d+)h\s+(\d+)m\s+(\d+)s/);
     if (match) {
       const extraHours = parseInt(match[1], 10);
       const extraMinutes = parseInt(match[2], 10);
       const extraSeconds = parseInt(match[3], 10);
-      remainingTime.hours += extraHours;
-      remainingTime.minutes += extraMinutes;
-      remainingTime.seconds += extraSeconds;
-      // Normalize
-      if (remainingTime.seconds >= 60) {
-        remainingTime.minutes += Math.floor(remainingTime.seconds / 60);
-        remainingTime.seconds = remainingTime.seconds % 60;
-      }
-      if (remainingTime.minutes >= 60) {
-        remainingTime.hours += Math.floor(remainingTime.minutes / 60);
-        remainingTime.minutes = remainingTime.minutes % 60;
-      }
+      extraSecondsIfEarly = extraHours * 3600 + extraMinutes * 60 + extraSeconds;
     }
   }
+
+  // Always use live worked time and correct variables
+  let totalTargetSeconds = targetDayDurationInSeconds + extraSecondsIfEarly;
+  let workedSecondsLive = 0;
+  const durationNodeLive = document.getElementsByClassName('globalTable-Table-td')[4];
+  if (durationNodeLive) {
+    const durationValueLive = durationNodeLive.children[0].children[0].innerHTML.split(':');
+    workedSecondsLive = Number(durationValueLive[0]) * 3600 + Number(durationValueLive[1]) * 60 + Number(durationValueLive[2]);
+  }
+  let remainingSecondsLive = Math.max(0, totalTargetSeconds - workedSecondsLive);
+  let remainingTime = {
+    hours: Math.floor(remainingSecondsLive / 3600),
+    minutes: Math.floor((remainingSecondsLive % 3600) / 60),
+    seconds: remainingSecondsLive % 60
+  };
   const formattedRemainingTime = formatTime(remainingTime);
-
-  // Set interval to update remaining time every second
-  const interval = setInterval(() => {
-    let intervalRemainingTime = getRemainingTime(initialDurationInSeconds, targetDayDurationInSeconds);
-    if (isBeforeCompanyTime && diffWithCompanyTime) {
-      const match = diffWithCompanyTime.match(/(\d+)h\s+(\d+)m\s+(\d+)s/);
-      if (match) {
-        const extraHours = parseInt(match[1], 10);
-        const extraMinutes = parseInt(match[2], 10);
-        const extraSeconds = parseInt(match[3], 10);
-        intervalRemainingTime.hours += extraHours;
-        intervalRemainingTime.minutes += extraMinutes;
-        intervalRemainingTime.seconds += extraSeconds;
-        // Normalize
-        if (intervalRemainingTime.seconds >= 60) {
-          intervalRemainingTime.minutes += Math.floor(intervalRemainingTime.seconds / 60);
-          intervalRemainingTime.seconds = intervalRemainingTime.seconds % 60;
-        }
-        if (intervalRemainingTime.minutes >= 60) {
-          intervalRemainingTime.hours += Math.floor(intervalRemainingTime.minutes / 60);
-          intervalRemainingTime.minutes = intervalRemainingTime.minutes % 60;
-        }
-      }
-    }
-    remainingTime = intervalRemainingTime;
-    if (remainingTime.hours === 0 && remainingTime.minutes === 0 && remainingTime.seconds === 0) {
-      clearInterval(interval); // Stop when remaining time reaches 0
-    }
-  }, 1000); // Update every second
-
-  // Create leave time (time when target day duration will be completed)
-  const currentTime = new Date();
-  // Add extra time to leaveTime if needed
-  let totalLeaveSeconds = (remainingTime.hours * 3600 + remainingTime.minutes * 60 + remainingTime.seconds);
-  const leaveTime = new Date(currentTime.getTime() + totalLeaveSeconds * 1000);
-  const formattedLeaveTime = formatDuration({ hours: leaveTime.getHours(), minutes: leaveTime.getMinutes(), seconds: leaveTime.getSeconds() });
+  const now = new Date();
+  let leaveTime, formattedLeaveTime;
+  if (remainingSecondsLive === 0) {
+    leaveTime = now;
+    formattedLeaveTime = formatDuration({ hours: now.getHours(), minutes: now.getMinutes(), seconds: now.getSeconds() });
+  } else {
+    leaveTime = new Date(now.getTime() + remainingSecondsLive * 1000);
+    formattedLeaveTime = formatDuration({ hours: leaveTime.getHours(), minutes: leaveTime.getMinutes(), seconds: leaveTime.getSeconds() });
+  }
 
   let remainingWeekTime = calculateRemainingWeekTimeDirect();
   let remainingToTarget = calculateRemainingToTarget();

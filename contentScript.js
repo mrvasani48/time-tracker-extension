@@ -53,6 +53,32 @@ function getRemainingTime(elapsedTimeInSeconds, targetDurationInSeconds) {
 }
 
 function getTimeInfo() {
+  const startElement = document.getElementsByClassName('globalTable-Table-td')[1]
+
+  let startTime = startElement.querySelector('div > div > span').innerHTML.split(':');
+  startTime = startTime.map(Number); // Convert to numbers
+
+  const companyStartTime = [10, 0, 0];
+  
+  console.log('startTime', startTime);
+
+  // Compare startTime with companyStartTime
+  let isBeforeCompanyTime = false;
+  let diffWithCompanyTime = null;
+  // Convert both times to seconds for comparison
+  const startSeconds = startTime[0] * 3600 + startTime[1] * 60 + (startTime[2] || 0);
+  const companySeconds = companyStartTime[0] * 3600 + companyStartTime[1] * 60 + (companyStartTime[2] || 0);
+  if (startSeconds < companySeconds) {
+    isBeforeCompanyTime = true;
+    let diffSeconds = companySeconds - startSeconds;
+    const diffHours = Math.floor(diffSeconds / 3600);
+    diffSeconds = diffSeconds % 3600;
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffSecs = diffSeconds % 60;
+    diffWithCompanyTime = `${diffHours}h ${diffMinutes}m ${diffSecs}s`;
+  }
+  console.log('isBeforeCompanyTime', isBeforeCompanyTime);
+  console.log('diffWithCompanyTime', diffWithCompanyTime);
   const durationNode = document.getElementsByClassName('globalTable-Table-td')[4];
   if (!durationNode) {
     console.error('Duration node not found');
@@ -66,25 +92,79 @@ function getTimeInfo() {
 
   // Calculate the remaining time
   let remainingTime = getRemainingTime(initialDurationInSeconds, targetDayDurationInSeconds);
+
+  // If employee started before company time, add extra hours needed to remainingTime
+  if (isBeforeCompanyTime && diffWithCompanyTime) {
+    // Parse diffWithCompanyTime (e.g., '0h 30m 0s')
+    const match = diffWithCompanyTime.match(/(\d+)h\s+(\d+)m\s+(\d+)s/);
+    if (match) {
+      const extraHours = parseInt(match[1], 10);
+      const extraMinutes = parseInt(match[2], 10);
+      const extraSeconds = parseInt(match[3], 10);
+      remainingTime.hours += extraHours;
+      remainingTime.minutes += extraMinutes;
+      remainingTime.seconds += extraSeconds;
+      // Normalize
+      if (remainingTime.seconds >= 60) {
+        remainingTime.minutes += Math.floor(remainingTime.seconds / 60);
+        remainingTime.seconds = remainingTime.seconds % 60;
+      }
+      if (remainingTime.minutes >= 60) {
+        remainingTime.hours += Math.floor(remainingTime.minutes / 60);
+        remainingTime.minutes = remainingTime.minutes % 60;
+      }
+    }
+  }
   const formattedRemainingTime = formatTime(remainingTime);
 
   // Set interval to update remaining time every second
   const interval = setInterval(() => {
-    remainingTime = getRemainingTime(initialDurationInSeconds, targetDayDurationInSeconds);
-    
+    let intervalRemainingTime = getRemainingTime(initialDurationInSeconds, targetDayDurationInSeconds);
+    if (isBeforeCompanyTime && diffWithCompanyTime) {
+      const match = diffWithCompanyTime.match(/(\d+)h\s+(\d+)m\s+(\d+)s/);
+      if (match) {
+        const extraHours = parseInt(match[1], 10);
+        const extraMinutes = parseInt(match[2], 10);
+        const extraSeconds = parseInt(match[3], 10);
+        intervalRemainingTime.hours += extraHours;
+        intervalRemainingTime.minutes += extraMinutes;
+        intervalRemainingTime.seconds += extraSeconds;
+        // Normalize
+        if (intervalRemainingTime.seconds >= 60) {
+          intervalRemainingTime.minutes += Math.floor(intervalRemainingTime.seconds / 60);
+          intervalRemainingTime.seconds = intervalRemainingTime.seconds % 60;
+        }
+        if (intervalRemainingTime.minutes >= 60) {
+          intervalRemainingTime.hours += Math.floor(intervalRemainingTime.minutes / 60);
+          intervalRemainingTime.minutes = intervalRemainingTime.minutes % 60;
+        }
+      }
+    }
+    remainingTime = intervalRemainingTime;
     if (remainingTime.hours === 0 && remainingTime.minutes === 0 && remainingTime.seconds === 0) {
       clearInterval(interval); // Stop when remaining time reaches 0
     }
-
   }, 1000); // Update every second
 
   // Create leave time (time when target day duration will be completed)
   const currentTime = new Date();
-  const leaveTime = new Date(currentTime.getTime() + (remainingTime.hours * 3600 + remainingTime.minutes * 60 + remainingTime.seconds) * 1000);
+  // Add extra time to leaveTime if needed
+  let totalLeaveSeconds = (remainingTime.hours * 3600 + remainingTime.minutes * 60 + remainingTime.seconds);
+  const leaveTime = new Date(currentTime.getTime() + totalLeaveSeconds * 1000);
   const formattedLeaveTime = formatDuration({ hours: leaveTime.getHours(), minutes: leaveTime.getMinutes(), seconds: leaveTime.getSeconds() });
 
-  const remainingWeekTime = calculateRemainingWeekTimeDirect();
-  const remainingToTarget = calculateRemainingToTarget();
+  let remainingWeekTime = calculateRemainingWeekTimeDirect();
+  let remainingToTarget = calculateRemainingToTarget();
+
+  // If employee started before company time, add extra hours needed to remaining week/target
+  let extraHoursNote = null;
+  if (isBeforeCompanyTime && diffWithCompanyTime) {
+    extraHoursNote = `Employee needs to work extra: ${diffWithCompanyTime}`;
+    // Optionally, you can parse and add this time to remainingWeekTime/remainingToTarget if those are in seconds or can be parsed
+    // Here, just append the info for clarity
+    remainingWeekTime += ` (+${diffWithCompanyTime} extra)`;
+    remainingToTarget += ` (+${diffWithCompanyTime} extra)`;
+  }
 
   return {
     targetDay: formatDuration(targetDayDuration),
@@ -92,7 +172,10 @@ function getTimeInfo() {
     leaveAt: formattedLeaveTime,
     targetWeek: formatDuration(targetWeekDuration),
     remainingWeek: remainingWeekTime,
-    remainingToTarget: remainingToTarget
+    remainingToTarget: remainingToTarget,
+    isBeforeCompanyTime: isBeforeCompanyTime,
+    diffWithCompanyTime: diffWithCompanyTime,
+    extraHoursNote: extraHoursNote
   };
 }
 

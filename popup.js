@@ -26,6 +26,15 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('target-week').textContent = timeInfo.targetWeek;
             document.getElementById('remaining-week').textContent = timeInfo.remainingWeek;
             document.getElementById('remaining-to-target').textContent = timeInfo.remainingToTarget;
+            // Show extra hours note if present
+            const extraHoursNoteElem = document.getElementById('extra-hours-note');
+            if (timeInfo.extraHoursNote) {
+                extraHoursNoteElem.textContent = timeInfo.extraHoursNote;
+                extraHoursNoteElem.style.display = 'block';
+            } else {
+                extraHoursNoteElem.textContent = '';
+                extraHoursNoteElem.style.display = 'none';
+            }
         }
 
         // Initially update time info and set interval to update every 1 second

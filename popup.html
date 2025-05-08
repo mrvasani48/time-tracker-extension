@@ -34,9 +34,11 @@
                     <label for="day-seconds">Seconds:</label>
                     <input type="number" id="day-seconds" min="0" max="59">
                 </div>
-                <button id="save-day-duration">Save Day Duration</button>
+                <div style="display:flex; justify-content: end;">
+                    <button id="save-day-duration">Save Day Duration</button>
+                </div>
 
-                <h3>Set User Leave/WFH (Days)</h3>
+                <h3 style="margin-top: 20px;">Set User Leave/WFH (Days)</h3>
                 <div class="input-group">
                     <label for="leave-days" class="leave-days-label">Leave Days:</label>
                     <select id="leave-days">
@@ -53,7 +55,7 @@
                         <option value="5">5</option>
                     </select>
                 </div>
-                <h3>Target Week Duration</h3>
+                <h3 style="margin-top: 20px;">Target Week Duration</h3>
                 <div class="input-group">
                     <label for="week-hours">Hours:</label>
                     <input type="number" id="week-hours" min="0" max="168">
@@ -62,8 +64,9 @@
                     <label for="week-seconds">Seconds:</label>
                     <input type="number" id="week-seconds" min="0" max="59">
                 </div>
-                <button id="save-week-duration">Save Week Duration</button>
-                <p style="text-align: right;">Developed by Kishan Vasani</p>
+                <div style="display:flex; justify-content: end;">
+                    <button id="save-week-duration">Save Week Duration</button>
+                </div>
             </div>
         </div>
         <script src="popup.js"></script>

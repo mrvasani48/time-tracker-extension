@@ -29,8 +29,15 @@ document.addEventListener('DOMContentLoaded', function () {
             // Show extra hours note if present
             const extraHoursNoteElem = document.getElementById('extra-hours-note');
             if (timeInfo.extraHoursNote) {
-                extraHoursNoteElem.textContent = timeInfo.extraHoursNote;
+                // Extract the hours part from the note, e.g. 'Employee needs to work extra: 2h 30m 0s'
+                const match = timeInfo.extraHoursNote.match(/^(Employee needs to work extra: )(.*)$/);
+                if (match) {
+                    extraHoursNoteElem.innerHTML = `${match[1]}<span style="color:#28a745;">${match[2]}</span>`;
+                } else {
+                    extraHoursNoteElem.textContent = timeInfo.extraHoursNote;
+                }
                 extraHoursNoteElem.style.display = 'block';
+                extraHoursNoteElem.style.color = '#fff';
             } else {
                 extraHoursNoteElem.textContent = '';
                 extraHoursNoteElem.style.display = 'none';

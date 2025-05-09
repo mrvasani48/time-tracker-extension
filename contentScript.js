@@ -7,11 +7,13 @@ chrome.storage.local.get('targetDayDuration', (result) => {
     return;
   }
 
-   targetDayDuration = result.targetDayDuration 
-    ? JSON.parse(result.targetDayDuration) 
+  targetDayDuration = result.targetDayDuration
+    ? JSON.parse(result.targetDayDuration)
     : null;
 
   if (targetDayDuration) {
+    console.log('%c🚀 Time Tracker Extension installed!', 'color: white; background: #0078D7; font-size: 16px; font-weight: bold; padding: 4px 12px; border-radius: 6px;');
+    console.log('%c😊 Enjoy your day!', 'color: #fff; background: #28a745; font-size: 14px; font-weight: bold; padding: 3px 10px; border-radius: 4px;');
     console.log('Retrieved targetDayDuration:', targetDayDuration);
   } else {
     console.warn('targetDayDuration not found in storage.');
@@ -24,15 +26,9 @@ chrome.storage.local.get('targetWeekDuration', (result) => {
     return;
   }
 
-   targetWeekDuration = result.targetWeekDuration 
-    ? JSON.parse(result.targetWeekDuration) 
+  targetWeekDuration = result.targetWeekDuration
+    ? JSON.parse(result.targetWeekDuration)
     : null;
-
-  if (targetWeekDuration) {
-    console.log('Retrieved targetWeekDuration:', targetWeekDuration);
-  } else {
-    console.warn('targetDayDuration not found in storage.');
-  }
 });
 
 
@@ -59,7 +55,7 @@ function getTimeInfo() {
   startTime = startTime.map(Number); // Convert to numbers
 
   const companyStartTime = [10, 0, 0];
-  
+
 
   // Compare startTime with companyStartTime
   let isBeforeCompanyTime = false;
@@ -219,7 +215,7 @@ function formatDate(date) {
   return date.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true });
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "getTimeInfo") {
     sendResponse({ timeInfo: getTimeInfo() });
   }

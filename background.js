@@ -1,6 +1,7 @@
 // background.js
 chrome.runtime.onInstalled.addListener(function () {
-    console.log('Time Tracker Extension installed!');
+    console.log('%c🚀 Time Tracker Extension installed!','color: white; background: #0078D7; font-size: 16px; font-weight: bold; padding: 4px 12px; border-radius: 6px;');
+    console.log('%c😊 Enjoy your day!','color: #fff; background: #28a745; font-size: 14px; font-weight: bold; padding: 3px 10px; border-radius: 4px;');
   });
   
   // Listener for messages sent from the popup or content script

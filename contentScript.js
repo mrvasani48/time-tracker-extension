@@ -131,10 +131,6 @@ function getTimeInfo() {
   let extraHoursNote = null;
   if (isBeforeCompanyTime && diffWithCompanyTime) {
     extraHoursNote = `Employee needs to work extra: ${diffWithCompanyTime}`;
-    // Optionally, you can parse and add this time to remainingWeekTime/remainingToTarget if those are in seconds or can be parsed
-    // Here, just append the info for clarity
-    remainingWeekTime += ` (+${diffWithCompanyTime} extra)`;
-    remainingToTarget += ` (+${diffWithCompanyTime} extra)`;
   }
 
   return {

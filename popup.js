@@ -35,6 +35,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 extraHoursNoteElem.textContent = '';
                 extraHoursNoteElem.style.display = 'none';
             }
+            // Show Friday note only if today is Friday, otherwise show default note
+            const fridayStaticNote = document.getElementById('friday-static-note');
+            if (fridayStaticNote) {
+                fridayStaticNote.style.color = '#ff9800';
+                fridayStaticNote.style.fontSize = '15px';
+                fridayStaticNote.style.fontWeight = 'bold';
+                fridayStaticNote.style.marginTop = '10px';
+                const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const now = new Date();
+                const todayNum = now.getDay();
+                const todayName = dayNames[todayNum];
+                const day = now.getDate();
+                const month = monthNames[now.getMonth()];
+                const datePrefix = `${day} ${month} ${todayName}`;
+                if (todayNum === 5) { 
+                    fridayStaticNote.textContent = `${datePrefix}: you can't leave office premises before 5:30 PM. On Fridays, your daily target is set as per the remaining week time.`;
+                } else {
+                    let leaveNote = `${datePrefix}: Completed 8.20h. You can set as per Target Day Duration or Week Duration.`;
+                    leaveNote += ' Leave/WFH detected: Set Leave Days dropdown to update week duration.';
+                    fridayStaticNote.textContent = leaveNote;
+                }
+            }
         }
 
         // Initially update time info and set interval to update every 1 second
@@ -54,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const defaultDayDuration = { hours: 8, minutes: 20, seconds: 0 }; // Default day duration
         const defaultWeekDuration = { hours: 41, minutes: 40, seconds: 0 }; // Default week duration
-        
+
         // Load stored durations and prefill inputs
         chrome.storage.local.get(['targetDayDuration', 'targetWeekDuration', 'leaveDays'], (result) => {
             // Handle targetDayDuration
@@ -83,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
             weekMinutesInput.value = weekDuration.minutes;
             weekSecondsInput.value = weekDuration.seconds;
         });
-        
+
 
         // Helper to reload the active tab
         function reloadActiveTab() {
@@ -109,19 +132,19 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add mapping for leave days to week duration
         const leaveDaysSelect = document.getElementById('leave-days');
         const weekDurationMap = {
-            '0':   { hours: 41, minutes: 40, seconds: 0 },
+            '0': { hours: 41, minutes: 40, seconds: 0 },
             '0.5': { hours: 37, minutes: 40, seconds: 0 },
-            '1':   { hours: 33, minutes: 20, seconds: 0 },
+            '1': { hours: 33, minutes: 20, seconds: 0 },
             '1.5': { hours: 29, minutes: 20, seconds: 0 },
-            '2':   { hours: 25, minutes: 0,  seconds: 0 },
-            '2.5': { hours: 21, minutes: 0,  seconds: 0 },
-            '3':   { hours: 16, minutes: 40, seconds: 0 },
+            '2': { hours: 25, minutes: 0, seconds: 0 },
+            '2.5': { hours: 21, minutes: 0, seconds: 0 },
+            '3': { hours: 16, minutes: 40, seconds: 0 },
             '3.5': { hours: 12, minutes: 40, seconds: 0 },
-            '4':   { hours: 8,  minutes: 20, seconds: 0 },
-            '4.5': { hours: 4,  minutes: 20, seconds: 0 },
-            '5':   { hours: 0,  minutes: 0,  seconds: 0 }
+            '4': { hours: 8, minutes: 20, seconds: 0 },
+            '4.5': { hours: 4, minutes: 20, seconds: 0 },
+            '5': { hours: 0, minutes: 0, seconds: 0 }
         };
-        leaveDaysSelect.addEventListener('change', function() {
+        leaveDaysSelect.addEventListener('change', function () {
             const val = leaveDaysSelect.value;
             const dur = weekDurationMap[val];
             setWeekDuration(dur.hours, dur.minutes, dur.seconds);
